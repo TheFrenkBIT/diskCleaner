@@ -11,7 +11,7 @@ $_SERVER['DOCUMENT_ROOT']='/home/bitrix/www';
 require_once($_SERVER['DOCUMENT_ROOT'] . "/bitrix/modules/main/include/prolog_before.php");
 require_once($_SERVER['DOCUMENT_ROOT'] . '/local/bx-robots/BXConnector.php');
 require_once($_SERVER['DOCUMENT_ROOT'] . "/local/twig/vendor/autoload.php");
-require_once($_SERVER['DOCUMENT_ROOT'] . '/local/controllers/DiskCleaner.php');
+require_once($_SERVER['DOCUMENT_ROOT'] . '/local/disk-controllers/DiskCleaner.php');
 require_once($_SERVER['DOCUMENT_ROOT'] . '/local/bx-robots/Logger.php');
 
 global $USER;
