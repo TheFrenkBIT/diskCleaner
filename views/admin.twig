@@ -1,0 +1,80 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="//api.bitrix24.com/api/v1/"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+          integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+</head>
+<body>
+<div class="col-5">
+    <form class="form-setting">
+        <input class="d-none" name="domain" value="{{ domain }}">
+        <input class="d-none" name="auth" value="{{ auth }}">
+        <input class="d-none" name="refresh" value="{{ refresh }}">
+        <div class="form-group">
+            <label>Через сколько дней после обновления удалять файлы</label>
+            <input type="text" name = "days" class="form-control" value="{{ data.days }}">
+        </div>
+        <div class="form-group">
+            <label>ИД задач через запятую, файлы которых удалять нельзя</label>
+            <input type="text" name = "tasks" class="form-control" value="{{ data.tasks }}">
+        </div>
+        <div class="form-group">
+            <label>ИД папок через запятую, файлы которых удалять нельзя</label>
+            <input type="text" name = "folders" class="form-control" value="{{ data.folders }}">
+        </div>
+        <div class="form-group">
+            <label>Удалять файлы только указанных форматов (если пусто, удаляет все форматы)</label>
+            <input type="text" name = "formats" class="form-control" value="{{ data.formats }}">
+        </div>
+        <div class="form-group">
+            <label>Удалять файлы только размером больше байт</label>
+            <input type="text" name = "size" class="form-control" value="{{ data.size }}">
+        </div>
+        <div class="form-check">
+            <input class="form-check-input position-static" type="checkbox" name="active" value="{{ data.active }}" >
+            <label>Удаление работает</label>
+        </div>
+    </form>
+    <button class="btn btn-success" id="save-settings">Сохранить Настройки</button>
+</div>
+<script>
+    $('document').ready(function (){
+        let input_check = $('[type=checkbox]').val();
+        if (input_check){
+            $('[type=checkbox]').prop('checked', true);
+        }
+        $('[name="size"]').on('input',function (event){
+            $('.size-human').remove();
+            $('[name="size"]').after('<span class="size-human">'+bytesToSize($('[name="size"]').val())+'</span>');
+        });
+        $('#save-settings').click(function () {
+            var form_data = $('.form-setting').serialize();
+            let active_status = false;
+            if ($('[name="active"]').is(":checked"))
+            {
+                active_status = true;
+            }
+            $.ajax({
+                'url': '/local/clear-disk/ajax.php',
+                'data': form_data,
+                'success': function (json) {
+                    let message = JSON.parse(json);
+                    $('.form-check').after('<div style="color: #3ea63e;" class="temp-message"><span>'+message+'</span></div>');
+                    setTimeout(function (){
+                       $('.temp-message').remove();
+                    }, 2000);
+                }
+            });
+        });
+    });
+    function bytesToSize(bytes) {
+        var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        if (bytes == 0) return '0 Byte';
+        var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+        return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
+    }
+</script>
+</body>
+</html>
